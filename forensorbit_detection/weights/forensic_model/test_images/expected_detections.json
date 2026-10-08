@@ -1,0 +1,152 @@
+[
+  {
+    "filename": "0005b2913ba46ddf_jpg.rf.130bf34f9c83ca9ef60f2effe1537e45.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 4,
+        "class_name": "Shotgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.23515625,
+          0.3578125,
+          0.29296875,
+          0.13359375
+        ]
+      },
+      {
+        "class_id": 4,
+        "class_name": "Shotgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.80390625,
+          0.4703125,
+          0.1578125,
+          0.16796875
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "002c057f97b642ef_jpg.rf.aa330cad406cf16e2783c5dbe7eb17ce.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 6,
+        "class_name": "Tank",
+        "yolo_bbox_normalized_cxcywh": [
+          0.471875,
+          0.309375,
+          0.3875,
+          0.23515625
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "Tank",
+        "yolo_bbox_normalized_cxcywh": [
+          0.84140625,
+          0.32890625,
+          0.3140625,
+          0.25859375
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "003e17bf335ca518_jpg.rf.9b2064ffa2447586dd522e8cc9a627a9.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 4,
+        "class_name": "Shotgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.5875,
+          0.3234375,
+          0.103125,
+          0.11796875
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "006fb86aed487201_jpg.rf.3512a3aa3efcbb69f59046151f5695ed.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 0,
+        "class_name": "Handgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.2125,
+          0.52890625,
+          0.29296875,
+          0.64375
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "006fd953d2fb5221_jpg.rf.1fc25ec21a20d0c9c78bfb779742f071.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 4,
+        "class_name": "Shotgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.40546875,
+          0.71015625,
+          0.60078125,
+          0.2890625
+        ]
+      },
+      {
+        "class_id": 4,
+        "class_name": "Shotgun",
+        "yolo_bbox_normalized_cxcywh": [
+          0.5234375,
+          0.50625,
+          0.39453125,
+          0.2046875
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "009151e566411b5d_jpg.rf.003bb0a9ae150eef5a819099a4f55f22.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 3,
+        "class_name": "Rifle",
+        "yolo_bbox_normalized_cxcywh": [
+          0.73984375,
+          0.57890625,
+          0.1921875,
+          0.32890625
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "00e57fff9d65a8a2_jpg.rf.d1991fd2ef0b10127b0cce1e58075341.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 1,
+        "class_name": "Knife",
+        "yolo_bbox_normalized_cxcywh": [
+          0.2234375,
+          0.63359375,
+          0.3953125,
+          0.65078125
+        ]
+      }
+    ]
+  },
+  {
+    "filename": "00e5ff7c65f4da17_jpg.rf.285a140b6f3405e94584be338f0e2898.jpg",
+    "ground_truth_labels": [
+      {
+        "class_id": 2,
+        "class_name": "Missile",
+        "yolo_bbox_normalized_cxcywh": [
+          0.60859375,
+          0.471875,
+          0.0359375,
+          0.3640625
+        ]
+      }
+    ]
+  }
+]

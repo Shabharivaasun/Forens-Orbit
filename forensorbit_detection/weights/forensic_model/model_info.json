@@ -1,0 +1,54 @@
+{
+  "model_architecture": "YOLOv8n (Nano Object Detector)",
+  "input_resolution": {
+    "width": 416,
+    "height": 416,
+    "channels": 3
+  },
+  "tensor_names": {
+    "input": "in0",
+    "output": [
+      "out0"
+    ]
+  },
+  "package_versions": {
+    "ultralytics": "8.4.138",
+    "torch": "2.13.0+cpu",
+    "ncnn": "1.0.20260526",
+    "pnnx": "20260526"
+  },
+  "preprocessing": {
+    "color_space": "BGR_to_RGB (ncnn::Mat::PixelType::PIXEL_BGR2RGB)",
+    "scaling": "1/255.0 normalization (substract_mean_normalize([], [1/255.0, 1/255.0, 1/255.0]))",
+    "letterboxing": "Aspect-ratio preserving resize with constant 114.0 border padding to 416x416"
+  },
+  "output_layout_and_decoding": {
+    "output_tensor_shape": [
+      1,
+      11,
+      3549
+    ],
+    "output_layout": "11 channels: 4 box distance offsets (reg_max=16 DFL) + 7 class scores",
+    "box_decoding_method": "DFL (Distribution Focal Loss) integral decoding over grid strides [8, 16, 32]",
+    "recommended_conf_threshold": 0.25,
+    "recommended_nms_iou_threshold": 0.45
+  },
+  "classes": [
+    "Handgun",
+    "Knife",
+    "Missile",
+    "Rifle",
+    "Shotgun",
+    "Sword",
+    "Tank"
+  ],
+  "file_hashes": {
+    "model.param_sha256": "875e113cdc59ca300375d47cc43391cf48c6bb93985546d23cb263cd4814b2da",
+    "model.bin_sha256": "045ee1e5993f929484637c9085b79799b7e152fc5240e90ef8a6dcb697f2f0d6"
+  },
+  "file_sizes_bytes": {
+    "model.param": 16551,
+    "model.bin": 12070896,
+    "total_mb": 11.53
+  }
+}

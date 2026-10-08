@@ -1,0 +1,7 @@
+Handgun
+Knife
+Missile
+Rifle
+Shotgun
+Sword
+Tank

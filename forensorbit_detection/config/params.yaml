@@ -1,0 +1,29 @@
+/**:
+  ros__parameters:
+    # Node 1: evidence_detector_node parameters
+    frame_sample_interval: 15
+    weights_path: ""  # Defaults to package_share_directory + '/weights/best_ncnn_model' if empty
+    confidence_threshold: 0.4
+    output_base_dir: "/root/ros2_ws/reports"
+
+    # Camera capture node parameters. camera_index 0 maps to /dev/video0 for
+    # most USB webcams and V4L2-compatible Pi Camera setups.
+    camera_index: 0
+    capture_duration_sec: 30.0
+    fps: 20.0
+    frame_width: 1280
+    frame_height: 720
+    output_dir: "/root/ros2_ws/videos"
+    filename_prefix: "evidence"
+    codec: "mp4v"
+    auto_start: false
+
+    # Node 2: report_sender_node parameters
+    ssh_host: "10.30.82.239"
+    ssh_user: "nukmaan"
+    ssh_key_path: "/root/ros2_ws/keys/forensorbit_ed25519"
+    # Windows OpenSSH supports this drive-letter path when using scp.
+    remote_report_path: "D:/ROBO/REPORTS"
+    transfer_method: "scp"
+    max_retries: 3
+    retry_delay_sec: 5.0

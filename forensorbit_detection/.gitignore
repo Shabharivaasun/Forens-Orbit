@@ -1,0 +1,28 @@
+# Python / PyCache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+
+# ROS 2 build outputs
+build/
+install/
+log/
+
+# Training runs & caches
+runs/
+.cache/
+*.cache
+*.pt
+
+# Video/output files
+output/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

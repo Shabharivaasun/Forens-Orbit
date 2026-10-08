@@ -1,0 +1,5 @@
+# Native Pi CPU runtime only. Do not add torch, ultralytics, CUDA, or NVIDIA packages.
+numpy>=2
+opencv-python>=4.10
+ncnn
+reportlab>=4
