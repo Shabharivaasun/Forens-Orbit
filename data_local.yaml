@@ -1,0 +1,7 @@
+path: D:/forensorbit_laptop_bundle/forensorbit_laptop_bundle
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 7
+names: ['Handgun', 'Knife', 'Missile', 'Rifle', 'Shotgun', 'Sword', 'Tank']

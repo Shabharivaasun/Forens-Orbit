@@ -1,0 +1,33 @@
+# Dataset folders & caches
+train/
+valid/
+test/
+*.cache
+
+# Python / PyCache / Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+
+# ROS 2 build & install directories
+build/
+install/
+log/
+
+# Training runs & temporary logs
+runs/
+.cache/
+*.log
+
+# Output media / raw recorded videos
+output/
+
+# IDE & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
