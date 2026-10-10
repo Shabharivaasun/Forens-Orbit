@@ -63,51 +63,102 @@ def capture_video(output: Path, seconds: float, width: int, height: int, fps: in
 
 
 def load_ncnn_model(model_path: Path):
-    """Load the direct NCNN YOLOv8 CPU runtime (no PyTorch or CUDA required)."""
+    """Load the direct NCNN CPU runtime (no PyTorch or CUDA required)."""
     if model_path.suffix == ".pt":
-        raise ValueError("Raw .pt inference is disabled on the Pi. Provide an NCNN export instead.")
-    if model_path.exists():
-        raise ValueError(
-            "Custom NCNN exports require their class-label file and tensor names. "
-            "Use the built-in NCNN YOLOv8 placeholder until the trained model is supplied."
-        )
+        raise ValueError("Raw .pt inference is disabled on the Pi. Provide an NCNN export directory instead.")
     try:
         import ncnn
     except ImportError as exc:
         raise RuntimeError("NCNN is missing. Install the 'ncnn' package in the project venv.") from exc
-    # Use maintained YOLOv8 NCNN assets installed locally during setup.
-    asset_dir = Path.home() / ".ncnn" / "models"
-    param, binary = asset_dir / "yolov8s.param", asset_dir / "yolov8s.bin"
-    if not param.is_file() or not binary.is_file():
-        raise FileNotFoundError("Missing ~/.ncnn/models/yolov8s.param or yolov8s.bin; run the NCNN asset setup.")
-    class DirectYoloV8:
+
+    # Determine model files
+    if model_path.is_dir() and (model_path / "model.param").is_file() and (model_path / "model.bin").is_file():
+        param = model_path / "model.param"
+        binary = model_path / "model.bin"
+        labels_file = model_path / "labels.txt"
+        class_names = {}
+        if labels_file.is_file():
+            for idx, line in enumerate(labels_file.read_text(encoding="utf-8").strip().splitlines()):
+                if line.strip():
+                    class_names[idx] = line.strip()
+    elif model_path.is_dir() and (model_path / "model.ncnn.param").is_file() and (model_path / "model.ncnn.bin").is_file():
+        param = model_path / "model.ncnn.param"
+        binary = model_path / "model.ncnn.bin"
+        labels_file = model_path / "labels.txt"
+        class_names = {}
+        if labels_file.is_file():
+            for idx, line in enumerate(labels_file.read_text(encoding="utf-8").strip().splitlines()):
+                if line.strip():
+                    class_names[idx] = line.strip()
+    else:
+        # Fall back to maintained YOLOv8 NCNN assets installed locally during setup.
+        asset_dir = Path.home() / ".ncnn" / "models"
+        param, binary = asset_dir / "yolov8s.param", asset_dir / "yolov8s.bin"
         class_names = {0: "person", 43: "knife"}
-        def __init__(self):
-            self.net = ncnn.Net(); self.net.opt.num_threads = 4
-            self.net.load_param(str(param)); self.net.load_model(str(binary))
+        if not param.is_file() or not binary.is_file():
+            raise FileNotFoundError(f"Model files not found in {model_path} or default {asset_dir}")
+
+    class DirectYoloV8:
+        def __init__(self, c_names):
+            self.class_names = c_names
+            self.net = ncnn.Net()
+            self.net.opt.num_threads = 4
+            self.net.load_param(str(param))
+            self.net.load_model(str(binary))
+
         def __call__(self, image):
-            h, w = image.shape[:2]; scale = min(640 / w, 640 / h)
+            h, w = image.shape[:2]
+            target_size = 416
+            scale = min(target_size / w, target_size / h)
             nw, nh = int(w * scale), int(h * scale)
             mat = ncnn.Mat.from_pixels_resize(image, ncnn.Mat.PixelType.PIXEL_BGR2RGB, w, h, nw, nh)
-            left, right = (640 - nw) // 2, 640 - nw - (640 - nw) // 2
-            top, bottom = (640 - nh) // 2, 640 - nh - (640 - nh) // 2
+            left, right = (target_size - nw) // 2, target_size - nw - (target_size - nw) // 2
+            top, bottom = (target_size - nh) // 2, target_size - nh - (target_size - nh) // 2
             mat = ncnn.copy_make_border(mat, top, bottom, left, right, ncnn.BorderType.BORDER_CONSTANT, 114.0)
             mat.substract_mean_normalize([], [1 / 255.0] * 3)
-            ex = self.net.create_extractor(); ex.input("in0", mat); _, out = ex.extract("out0")
-            rows = np.array(out); boxes, scores, labels = [], [], []
-            grids = [(80, 8), (40, 16), (20, 32)]; offset = 0
-            for grid, stride in grids:
-                for index, row in enumerate(rows[offset:offset + grid * grid]):
-                    label, score = int(np.argmax(row[64:])), float(1 / (1 + np.exp(-np.max(row[64:]))))
-                    if score < 0.4: continue
-                    d = np.exp(row[:64].reshape(4, 16) - row[:64].reshape(4, 16).max(1, keepdims=True)); d = (d / d.sum(1, keepdims=True)) @ np.arange(16)
-                    gx, gy = index % grid, index // grid; cx, cy = (gx + .5) * stride, (gy + .5) * stride
-                    x1, y1, x2, y2 = cx - d[0] * stride, cy - d[1] * stride, cx + d[2] * stride, cy + d[3] * stride
-                    boxes.append([(x1-left)/scale, (y1-top)/scale, (x2-x1)/scale, (y2-y1)/scale]); scores.append(score); labels.append(label)
-                offset += grid * grid
-            keep = cv2.dnn.NMSBoxes(boxes, scores, .4, .45) if boxes else []
-            return [type("Detection", (), {"label": labels[int(i)], "prob": scores[int(i)], "rect": type("Rect", (), {"x": boxes[int(i)][0], "y": boxes[int(i)][1], "w": boxes[int(i)][2], "h": boxes[int(i)][3]})()})() for i in np.array(keep).reshape(-1)]
-    return DirectYoloV8()
+            ex = self.net.create_extractor()
+            ex.input("in0", mat)
+            _, out = ex.extract("out0")
+            cols = np.array(out).T
+            boxes, scores, labels = [], [], []
+            for col in cols:
+                cx, cy, bw, bh = col[:4]
+                cls_scores = col[4:]
+                label = int(np.argmax(cls_scores))
+                score = float(cls_scores[label])
+                if score < 0.25:
+                    continue
+                x1 = (cx - bw / 2.0 - left) / scale
+                y1 = (cy - bh / 2.0 - top) / scale
+                w_orig = bw / scale
+                h_orig = bh / scale
+                boxes.append([float(x1), float(y1), float(w_orig), float(h_orig)])
+                scores.append(score)
+                labels.append(label)
+            keep = cv2.dnn.NMSBoxes(boxes, scores, 0.25, 0.45) if boxes else []
+            return [
+                type(
+                    "Detection",
+                    (),
+                    {
+                        "label": labels[int(i)],
+                        "prob": scores[int(i)],
+                        "rect": type(
+                            "Rect",
+                            (),
+                            {
+                                "x": boxes[int(i)][0],
+                                "y": boxes[int(i)][1],
+                                "w": boxes[int(i)][2],
+                                "h": boxes[int(i)][3],
+                            },
+                        )(),
+                    },
+                )()
+                for i in np.array(keep).reshape(-1)
+            ]
+
+    return DirectYoloV8(class_names)
 
 
 def annotate_and_report(video_path: Path, report_dir: Path, model_path: Path | None,
